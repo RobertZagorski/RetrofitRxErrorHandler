@@ -1,0 +1,37 @@
+apply plugin: 'java'
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+sourceSets {
+    test {
+        output.resourcesDir = output.classesDir
+    }
+}
+
+sourceSets.test {
+    resources.srcDirs = ["src/test/resources"]
+}
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
+}
+
+dependencies {
+    compile rxJava
+    compile retrofitRxJavaAdapter
+    testCompile mockito
+    testCompile junit
+    testCompile mockwebserver
+    testCompile retrofitGsonConverter
+}

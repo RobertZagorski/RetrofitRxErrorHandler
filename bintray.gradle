@@ -1,0 +1,48 @@
+apply plugin: 'com.jfrog.bintray'
+apply from: '../bintray.data.gradle'
+
+version = libraryVersion
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+javadoc {
+    options.addStringOption("charset", "UTF-8")
+}
+
+task javadocGen(type: Javadoc) {
+    failOnError = false
+    source = sourceSets.main.java.srcDirs
+}
+
+task javadocJar(type: Jar, dependsOn: javadocGen) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(new FileInputStream(file(rootProject.file('local.properties'))))
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+
+    configurations = ['archives']
+    pkg {
+        repo = bintrayRepo
+        name = bintrayName
+        desc = libraryDescription
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = allLicenses
+        publish = true
+        publicDownloadNumbers = true
+    }
+}
