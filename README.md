@@ -54,7 +54,7 @@ Everyone who is using [Retrofit](https://square.github.io/retrofit/) combined wi
 
 ## Examples
 
-[Look into tests](tree/master/library/src/test/java/com/rzagorski/retrofitrxerrorhandler)
+[Look into tests](./library/src/test/java/com/rzagorski/retrofitrxerrorhandler)
 
 ## License
 
