@@ -2,11 +2,11 @@ ext {
     bintrayRepo = 'maven'
     bintrayName = 'RetrofitRxErrorHandler'
 
-    publishedGroupId = 'com.rzagorski.retrofitrxerrorhandler'
+    publishedGroupId = 'com.rzagorski'
     libraryName = 'RetrofitRxErrorHandler'
     artifact = 'retrofitrxerrorhandler'
 
-    libraryDescription = 'Hardening Retrofit RxJaxa API Layer against random errors'
+    libraryDescription = 'Hardening Retrofit RxJaxa API Layer against random network or server errors'
 
     siteUrl = 'https://github.com/RobertZagorski/RetrofitRxErrorHandler'
     gitUrl = 'https://github.com/RobertZagorski/RetrofitRxErrorHandler.git'
@@ -14,6 +14,8 @@ ext {
     libraryVersion = '1.0.0'
 
     developerId = 'RobertZagorski'
+    developerName = 'Robert Zagórski'
+    developerEmail = ''
 
     licenseName = 'The Apache Software License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
