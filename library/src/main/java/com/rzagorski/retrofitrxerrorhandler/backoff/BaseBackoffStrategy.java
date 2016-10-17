@@ -15,8 +15,14 @@
  */
 package com.rzagorski.retrofitrxerrorhandler.backoff;
 
+import com.rzagorski.retrofitrxerrorhandler.backoff.retryBehavior.ExclusiveRetryIfBehaviour;
+import com.rzagorski.retrofitrxerrorhandler.backoff.retryBehavior.InclusiveRetryIfBehaviour;
+import com.rzagorski.retrofitrxerrorhandler.backoff.strategies.AddThrowable;
 import com.rzagorski.retrofitrxerrorhandler.utils.ObservableUtils;
 import com.rzagorski.retrofitrxerrorhandler.utils.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import rx.Observable;
 import rx.functions.Action1;
@@ -27,16 +33,45 @@ import rx.functions.Func1;
  * Created by Robert Zagórski on 2016-09-28.
  */
 public abstract class BaseBackoffStrategy implements BackoffStrategy {
-
+    private boolean isExclusive;
+    private List<Class<? extends Throwable>> throwableList;
+    private Func1<Throwable, Boolean> retryIfFunc;
+    private Action2<Throwable, Integer> doOnRetryAction;
     private boolean isLoggingEnabled;
+
+    protected BaseBackoffStrategy(Builder builder) {
+        this.isExclusive = builder.isExclusive;
+        this.throwableList = builder.throwableList;
+        this.retryIfFunc = builder.retryIfFunction;
+        if (this.retryIfFunc == null) {
+            if (isExclusive) {
+                this.retryIfFunc = new ExclusiveRetryIfBehaviour(builder.throwableList, builder.httpCodeList);
+            } else {
+                this.retryIfFunc = new InclusiveRetryIfBehaviour(builder.throwableList, builder.httpCodeList);
+            }
+        }
+        this.doOnRetryAction = builder.doOnRetryAction;
+        if (this.doOnRetryAction == null) {
+            this.doOnRetryAction = new DefaultDoOnRetryAction();
+        }
+    }
 
     protected abstract Observable<Long> getWaitTime(int retry);
 
     protected abstract int getMaxRetries();
 
-    public abstract Func1<Throwable, Boolean> getRetryIfFunction();
+    public Func1<Throwable, Boolean> getRetryIfFunction() {
+        return retryIfFunc;
+    }
 
-    public abstract Action2<Throwable, Integer> doOnRetry(Throwable throwable, Integer integer);
+    @Override
+    public boolean isApplicable(Throwable throwable) {
+        return retryIfFunc.call(throwable);
+    }
+
+    public Action2<Throwable, Integer> doOnRetry(Throwable throwable, Integer retry) {
+        return doOnRetryAction;
+    }
 
     @Override
     public void setLoggingEnabled(boolean logging) {
@@ -100,5 +135,67 @@ public abstract class BaseBackoffStrategy implements BackoffStrategy {
                         }
                     }
                 });
+    }
+
+    public static class Builder implements Optional, AddThrowable<Builder> {
+        private boolean isExclusive = false;
+        private List<Class<? extends Throwable>> throwableList;
+        private List<Integer> httpCodeList;
+        private Func1<Throwable, Boolean> retryIfFunction;
+        private Action2<Throwable, Integer> doOnRetryAction;
+
+        public Builder() {
+            throwableList = new ArrayList<>();
+            httpCodeList = new ArrayList<>();
+        }
+
+        @Override
+        public Builder exclusive() {
+            isExclusive = true;
+            return this;
+        }
+
+        @Override
+        public Builder addThrowable(Class<? extends Throwable> throwableForBackoff) {
+            this.throwableList.add(throwableForBackoff);
+            return this;
+        }
+
+        @Override
+        public Builder setThrowable(List<Class<? extends Throwable>> throwableForBackoffList) {
+            this.throwableList = throwableForBackoffList;
+            return this;
+        }
+
+        @Override
+        public Builder setHttpCodeList(List<Integer> code) {
+            this.httpCodeList = code;
+            return this;
+        }
+
+        @Override
+        public Builder addHttpCode(int code) {
+            this.httpCodeList.add(code);
+            return this;
+        }
+
+        @Override
+        public Builder setRetryFunction(Func1<Throwable, Boolean> retryIf) {
+            this.retryIfFunction = retryIf;
+            return this;
+        }
+
+        @Override
+        public Builder setOnRetryAction(Action2<Throwable, Integer> onRetryAction) {
+            this.doOnRetryAction = onRetryAction;
+            return this;
+        }
+    }
+
+    public interface Optional {
+
+        public Optional setOnRetryAction(Action2<Throwable, Integer> onRetryAction);
+
+        public Optional setRetryFunction(Func1<Throwable, Boolean> retryIf);
     }
 }
