@@ -47,10 +47,49 @@ Everyone who is using [Retrofit](https://square.github.io/retrofit/) combined wi
 ### Options:
 
 * different backoff strategies (`Simple`, `Exponential`)
-* reactions to different [`Throwables`](http://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html) to strategy
-* reactions to [HTTP error codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) to strategy
+
+         Simple.init().(...).build()
+         
+     or
+         
+         Exponential.init().(...).build()
+
+#### Common:
+
+* reactions to different [`Throwables`](http://docs.oracle.com/javase/7/docs/api/java/lang/Throwable.html)
+
+         Exponential.init()
+             .addThrowable(HttpException.class)
+
+* reactions to [HTTP error codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
+
+         Exponential.init()
+             .setResponseCode(500)
+         
 * exclusive or inclusive behaviour to `Throwables` or HTTP error codes
+
+         Exponential.init()
+             .exclusive()
+
 * maximum retry count (different for every added strategy)
+
+         Exponential.init()
+             .addThrowable(HttpException.class)
+             .setBase(2)
+             .setMaxRetries(3)
+             
+* backup `Observable` (executed before strategy delay and after every occurrence of error or HTTP response code)
+
+         Exponential.init()
+             .addObservable(backupObservable)
+
+#### Exponential:
+
+* base of exponential function:
+
+          Exponential.init()
+              (...)
+              .setBase(2)
 
 ## Examples
 

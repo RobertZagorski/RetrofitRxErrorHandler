@@ -23,7 +23,8 @@ import rx.Observable;
 import rx.functions.Func1;
 
 /**
- * Main class for reacting to errors that were thrown during making a <a href="https://github.com/square/retrofit/blob/master/retrofit/src/main/java/retrofit2/Call.java">Call</a>.
+ * Main class for reacting to errors that were thrown during making a
+ * <a href="https://github.com/square/retrofit/blob/master/retrofit/src/main/java/retrofit2/Call.java">Call</a>.
  * <br></br>
  * Created by Robert Zagórski on 2016-09-28.
  */
@@ -52,12 +53,12 @@ public class RxErrorHandingFactory extends BaseRxCallAdapterFactory {
         return new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> observable) {
-                return (Observable<T>) observable.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
+                return observable.retryWhen(new Func1<Observable<? extends Throwable>, Observable<T>>() {
                     @Override
-                    public Observable<?> call(final Observable<? extends Throwable> error) {
+                    public Observable<T> call(final Observable<? extends Throwable> error) {
                         return error
                                 .flatMap(new IsRepeatableError(info.getBackoffStrategies()))
-                                .compose(new PassErrorToBackoffStrategies(info.getBackoffStrategies()));
+                                .compose(new PassErrorToBackoffStrategies<T>(info.getBackoffStrategies()));
                     }
                 });
             }

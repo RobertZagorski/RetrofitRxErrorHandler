@@ -37,7 +37,7 @@ public class Simple extends BaseBackoffStrategy {
         this.maxRetries = builder.maxRetries;
     }
 
-    public static AddThrowable<Builder> init() {
+    public static AddReaction<Builder> init() {
         return new Builder();
     }
 
@@ -50,7 +50,7 @@ public class Simple extends BaseBackoffStrategy {
         return maxRetries;
     }
 
-    public static class Builder implements AddThrowable<Builder>, Optional {
+    public static class Builder implements AddReaction<Builder>, Optional {
         private BaseBackoffStrategy.Builder baseBuilder;
         private int maxRetries = 3;
 
@@ -85,6 +85,12 @@ public class Simple extends BaseBackoffStrategy {
         @Override
         public Builder addHttpCode(int code) {
             baseBuilder.addHttpCode(code);
+            return this;
+        }
+
+        @Override
+        public Builder addObservable(Observable<?> observable) {
+            baseBuilder.addObservable(observable);
             return this;
         }
 

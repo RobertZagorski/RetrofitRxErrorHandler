@@ -17,7 +17,7 @@ package com.rzagorski.retrofitrxerrorhandler.backoff;
 
 import com.rzagorski.retrofitrxerrorhandler.backoff.retryBehavior.ExclusiveRetryIfBehaviour;
 import com.rzagorski.retrofitrxerrorhandler.backoff.retryBehavior.InclusiveRetryIfBehaviour;
-import com.rzagorski.retrofitrxerrorhandler.backoff.strategies.AddThrowable;
+import com.rzagorski.retrofitrxerrorhandler.backoff.strategies.AddReaction;
 import com.rzagorski.retrofitrxerrorhandler.utils.ObservableUtils;
 import com.rzagorski.retrofitrxerrorhandler.utils.Pair;
 
@@ -38,6 +38,7 @@ public abstract class BaseBackoffStrategy implements BackoffStrategy {
     private Func1<Throwable, Boolean> retryIfFunc;
     private Action2<Throwable, Integer> doOnRetryAction;
     private boolean isLoggingEnabled;
+    private Observable backupObservable;
 
     protected BaseBackoffStrategy(Builder builder) {
         this.isExclusive = builder.isExclusive;
@@ -54,6 +55,7 @@ public abstract class BaseBackoffStrategy implements BackoffStrategy {
         if (this.doOnRetryAction == null) {
             this.doOnRetryAction = new DefaultDoOnRetryAction();
         }
+        this.backupObservable = builder.observableToExecuteAfterError;
     }
 
     protected abstract Observable<Long> getWaitTime(int retry);
@@ -78,6 +80,11 @@ public abstract class BaseBackoffStrategy implements BackoffStrategy {
         isLoggingEnabled = logging;
     }
 
+    @Override
+    public Observable getBackupObservable() {
+        return backupObservable;
+    }
+
     private void callAction(Throwable throwable, Integer retry) {
         Action2<Throwable, Integer> action = doOnRetry(throwable, retry);
         if (action == null) {
@@ -99,6 +106,25 @@ public abstract class BaseBackoffStrategy implements BackoffStrategy {
                                     + BaseBackoffStrategy.this.getClass().getSimpleName());
                         }
                         return getRetryIfFunction().call(throwable);
+                    }
+                })
+                .flatMap(new Func1<Throwable, Observable<? extends Throwable>>() {
+                    @Override
+                    public Observable<? extends Throwable> call(final Throwable throwable) {
+                        if (backupObservable == null) {
+                            return Observable.just(throwable);
+                        }
+                        if (isLoggingEnabled) {
+                            System.out.println("Invoking backup observable");
+                        }
+                        return ((Observable<Object>) backupObservable)
+                                .switchIfEmpty(Observable.just(throwable))
+                                .flatMap(new Func1<Object, Observable<? extends Throwable>>() {
+                                    @Override
+                                    public Observable<? extends Throwable> call(Object o) {
+                                        return Observable.just(throwable);
+                                    }
+                                });
                     }
                 })
                 .zipWith(Observable.range(1, getMaxRetries() + 1),
@@ -137,12 +163,13 @@ public abstract class BaseBackoffStrategy implements BackoffStrategy {
                 });
     }
 
-    public static class Builder implements Optional, AddThrowable<Builder> {
+    public static class Builder implements Optional, AddReaction<Builder> {
         private boolean isExclusive = false;
         private List<Class<? extends Throwable>> throwableList;
         private List<Integer> httpCodeList;
         private Func1<Throwable, Boolean> retryIfFunction;
         private Action2<Throwable, Integer> doOnRetryAction;
+        private Observable<?> observableToExecuteAfterError;
 
         public Builder() {
             throwableList = new ArrayList<>();
@@ -176,6 +203,12 @@ public abstract class BaseBackoffStrategy implements BackoffStrategy {
         @Override
         public Builder addHttpCode(int code) {
             this.httpCodeList.add(code);
+            return this;
+        }
+
+        @Override
+        public Builder addObservable(Observable<?> observable) {
+            this.observableToExecuteAfterError = observable;
             return this;
         }
 

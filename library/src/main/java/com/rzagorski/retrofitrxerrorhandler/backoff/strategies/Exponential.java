@@ -45,7 +45,7 @@ public class Exponential extends BaseBackoffStrategy {
         this.base = builder.base;
     }
 
-    public static AddThrowable<Builder> init() {
+    public static AddReaction<Builder> init() {
         return new Builder();
     }
 
@@ -59,7 +59,7 @@ public class Exponential extends BaseBackoffStrategy {
     }
 
 
-    public static class Builder implements AddThrowable<Builder>, AddDelay, Optional {
+    public static class Builder implements AddReaction<Builder>, AddDelay, Optional {
         private BaseBackoffStrategy.Builder baseBuilder;
         private int maxRetries = 3;
         private int base = 2;
@@ -107,6 +107,12 @@ public class Exponential extends BaseBackoffStrategy {
         @Override
         public Builder addHttpCode(int code) {
             baseBuilder.addHttpCode(code);
+            return this;
+        }
+
+        @Override
+        public Builder addObservable(Observable<?> observable) {
+            baseBuilder.addObservable(observable);
             return this;
         }
 

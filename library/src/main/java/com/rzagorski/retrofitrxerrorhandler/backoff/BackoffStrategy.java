@@ -40,4 +40,6 @@ public interface BackoffStrategy extends Func1<Observable<? extends Throwable>, 
      * @param logging
      */
     void setLoggingEnabled(boolean logging);
+
+    <T> Observable<T> getBackupObservable();
 }
