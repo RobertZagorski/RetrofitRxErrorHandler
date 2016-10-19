@@ -27,7 +27,7 @@ Everyone who is using [Retrofit](https://square.github.io/retrofit/) combined wi
  
     * Add a dependency to application `build.gradle`:
      
-            compile 'com.rzagorski.retrofitrxerrorhandler:retrofitrxerrorhandler:1.1.0'
+            compile 'com.rzagorski:retrofitrxerrorhandler:1.1.0'
  
 2. Build the strategy:
 

@@ -1,2 +1,2 @@
 include ':library'
-project(":library").name = "RetrofitRxErrorHandler"
+project(":library").name = "retrofitrxerrorhandler"
