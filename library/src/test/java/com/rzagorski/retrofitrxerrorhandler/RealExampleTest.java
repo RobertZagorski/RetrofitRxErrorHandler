@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2016 Robert Zagórski.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.rzagorski.retrofitrxerrorhandler;
 
 import com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Exponential;
@@ -25,6 +40,10 @@ public class RealExampleTest {
 
     public static final String API_URL = "https://api.github.com";
 
+    /**
+     * This test executes the real query to github server.
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void main() throws IOException, InterruptedException {
         // Create a very simple REST adapter which points the GitHub API.

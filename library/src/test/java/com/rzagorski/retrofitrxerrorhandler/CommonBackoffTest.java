@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2016 Robert Zagórski.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.rzagorski.retrofitrxerrorhandler;
 
 import com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Exponential;
@@ -46,17 +61,17 @@ public class CommonBackoffTest {
         mockWebServer = null;
     }
 
+    /**
+     * This test show how to create CallAdapter.Factory without adding a reaction for errors.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testCompletes1() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
-                try {
-                    return MockWebServerUtils.getSuccessfulResponse();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return new MockResponse();
+                return MockWebServerUtils.getSuccessfulResponse();
             }
         });
         RxCallAdapter rxCallAdapter = new RxCallAdapter.Builder()
@@ -72,6 +87,15 @@ public class CommonBackoffTest {
         testSubscriber.assertCompleted();
     }
 
+
+    /**
+     * Test shows, that when the server responds with different error
+     * {@link retrofit2.adapter.rxjava.HttpException} than
+     * {@link com.rzagorski.retrofitrxerrorhandler.backoff.BackoffStrategy backoff strategies} react to
+     * ({@link java.net.SocketTimeoutException}) the execution ends immediately.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testCompletes2() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
@@ -83,12 +107,7 @@ public class CommonBackoffTest {
                     case 2:
                         return new MockResponse().setResponseCode(404);
                     case 3:
-                        try {
-                            return MockWebServerUtils.getSuccessfulResponse();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        return new MockResponse();
+                        return MockWebServerUtils.getSuccessfulResponse();
                     default:
                         return new MockResponse().setResponseCode(500);
                 }
@@ -118,6 +137,19 @@ public class CommonBackoffTest {
         assertTrue((endTime - startTime) <= (1) * MockWebServerUtils.ONE_SEC);
     }
 
+    /**
+     * Test shows the usage of two
+     * {@link com.rzagorski.retrofitrxerrorhandler.backoff.BackoffStrategy backoff strategies}.
+     * Shows that the delay is greater than 3 exponential backoff strategy invocation, that reacts
+     * to {@link retrofit2.adapter.rxjava.HttpException} and 3 simple strategies, that reacts to {@link java.net.SocketTimeoutException}
+     * <br></br>
+     * Shows that every backoff strategy is invoked as many times as in
+     * {@link com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Exponential.Builder#setMaxRetries(int)}
+     * or in {@link com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Simple.Builder#setMaxRetries(int)}
+     * independently.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackoffError1() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
@@ -154,6 +186,19 @@ public class CommonBackoffTest {
         assertTrue((endTime - startTime) >= (1 + 2 + 4 + 8) * MockWebServerUtils.ONE_SEC + 4 * 10 * MockWebServerUtils.ONE_SEC);
     }
 
+    /**
+     * Test shows the usage of two
+     * {@link com.rzagorski.retrofitrxerrorhandler.backoff.BackoffStrategy backoff strategies}.
+     * Shows that the delay is greater than 3 exponential backoff strategy invocation, that reacts
+     * to 500 server error and 3 simple strategies, that reacts to {@link java.net.SocketTimeoutException}
+     * <br></br>
+     * Shows that every backoff strategy is invoked as many times as in
+     * {@link com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Exponential.Builder#setMaxRetries(int)}
+     * or in {@link com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Simple.Builder#setMaxRetries(int)}
+     * independently.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackoffError2() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
@@ -189,6 +234,14 @@ public class CommonBackoffTest {
         assertTrue((endTime - startTime) >= (1 + 2 + 4 + 8) * MockWebServerUtils.ONE_SEC + 4 * 10 * MockWebServerUtils.ONE_SEC);
     }
 
+    /**
+     * Test shows the usage of one
+     * {@link com.rzagorski.retrofitrxerrorhandler.backoff.BackoffStrategy backoff strategy}.
+     * Shows that there is minimal delay, if the response from server is different than strategy
+     * reacts to.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackoffError3() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
@@ -214,10 +267,17 @@ public class CommonBackoffTest {
         testSubscriber.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
-        //four SocketTimeoutExceptions and 3 exponential backoff's
         assertTrue((endTime - startTime) <= 1 * 1000L);
     }
 
+    /**
+     * Test shows the usage of two
+     * {@link com.rzagorski.retrofitrxerrorhandler.backoff.BackoffStrategy backoff strategies}.
+     * Shows that there is minimal delay, if the response from server is different than strategies
+     * react to.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackoffError4() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
@@ -246,10 +306,15 @@ public class CommonBackoffTest {
         testSubscriber.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
-        //four SocketTimeoutExceptions and 3 exponential backoff's
         assertTrue((endTime - startTime) <= MockWebServerUtils.ONE_SEC);
     }
 
+    /**
+     * Test shows the usage of backup `Observable`. Checks if successful response is passed to
+     * `Subscriber` even if backup `Observable` is invoked.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackupObservable1() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
@@ -258,11 +323,7 @@ public class CommonBackoffTest {
                 if (mockWebServer.getRequestCount() == 1) {
                     return new MockResponse().setResponseCode(404);
                 } else if (mockWebServer.getRequestCount() > 1) {
-                    try {
-                        return MockWebServerUtils.getSuccessfulResponse();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    return MockWebServerUtils.getSuccessfulResponse();
                 }
                 return new MockResponse().setResponseCode(500);
             }
@@ -288,6 +349,11 @@ public class CommonBackoffTest {
         testSubscriber.assertCompleted();
     }
 
+    /**
+     * Test shows the usage of backup `Observable`. Checks if it is invoked at least one time.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackupObservable2() throws Exception {
         mockWebServer.setDispatcher(new Dispatcher() {
@@ -296,11 +362,7 @@ public class CommonBackoffTest {
                 if (mockWebServer.getRequestCount() <= 3) {
                     return new MockResponse().setResponseCode(404);
                 } else if (mockWebServer.getRequestCount() > 3) {
-                    try {
-                        return MockWebServerUtils.getSuccessfulResponse();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    return MockWebServerUtils.getSuccessfulResponse();
                 }
                 return new MockResponse().setResponseCode(500);
             }
@@ -328,6 +390,12 @@ public class CommonBackoffTest {
         testBackupObservable.assertStarted();
     }
 
+    /**
+     * Test shows the usage of backup `Observable`. Checks if is in invoked the same amount of times as
+     * the error response comes from server
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackupObservable3() throws Exception {
         final int REQUEST_COUNT = 3;
@@ -337,11 +405,7 @@ public class CommonBackoffTest {
                 if (mockWebServer.getRequestCount() <= REQUEST_COUNT) {
                     return new MockResponse().setResponseCode(404);
                 } else if (mockWebServer.getRequestCount() > REQUEST_COUNT) {
-                    try {
-                        return MockWebServerUtils.getSuccessfulResponse();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    return MockWebServerUtils.getSuccessfulResponse();
                 }
                 return new MockResponse().setResponseCode(500);
             }
@@ -369,6 +433,11 @@ public class CommonBackoffTest {
         assert testBackupObservable.getOnNextEvents().size() == REQUEST_COUNT;
     }
 
+    /**
+     * Test shows the usage of backup `Observable`. Checks if it completes at least one time.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
     @Test
     public void testBackupObservable4() throws Exception {
         final int REQUEST_COUNT = 3;
@@ -378,11 +447,7 @@ public class CommonBackoffTest {
                 if (mockWebServer.getRequestCount() <= REQUEST_COUNT) {
                     return new MockResponse().setResponseCode(404);
                 } else if (mockWebServer.getRequestCount() > REQUEST_COUNT) {
-                    try {
-                        return MockWebServerUtils.getSuccessfulResponse();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    return MockWebServerUtils.getSuccessfulResponse();
                 }
                 return new MockResponse().setResponseCode(500);
             }
@@ -408,5 +473,45 @@ public class CommonBackoffTest {
         observable.subscribe(testSubscriber);
         testSubscriber.awaitTerminalEvent();
         testBackupObservable.assertCompleted();
+    }
+
+    /**
+     * Test shows the usage of backup `Observable`. Checks if successful response is passed to
+     * `Subscriber` even if backup `Observable` is invoked and it does not emits any elements.
+     * <br></br>
+     * Test created by Robert Zagorski on 19.10.2016
+     */
+    @Test
+    public void testBackupObservable5() throws Exception {
+        mockWebServer.setDispatcher(new Dispatcher() {
+            @Override
+            public MockResponse dispatch(RecordedRequest request) throws InterruptedException {
+                if (mockWebServer.getRequestCount() == 1) {
+                    return new MockResponse().setResponseCode(404);
+                } else if (mockWebServer.getRequestCount() > 1) {
+                    return MockWebServerUtils.getSuccessfulResponse();
+                }
+                return new MockResponse().setResponseCode(500);
+            }
+        });
+
+        Observable<Boolean> backupObservable = Observable.empty();
+
+        RxCallAdapter rxCallAdapter = new RxCallAdapter.Builder()
+                .addBackoffStrategy(Exponential.init()
+                        .addHttpCode(404)
+                        .addObservable(backupObservable)
+                        .setBase(2)
+                        .setMaxRetries(3)
+                        .build())
+                .setLoggingEnabled(true)
+                .build();
+        GitHub github = createRetrofitInstance(mockWebServer.url("/").toString(),
+                new RxErrorHandingFactory(rxCallAdapter));
+        Observable observable = github.repos("square");
+        TestSubscriber testSubscriber = new TestSubscriber();
+        observable.subscribe(testSubscriber);
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertCompleted();
     }
 }
