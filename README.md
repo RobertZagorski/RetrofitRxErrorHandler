@@ -19,15 +19,15 @@ Everyone who is using [Retrofit](https://square.github.io/retrofit/) combined wi
 
     * Add following lines to you project's main `build.gradle`:
     
-        buildscript {
-            repositories {
-                jcenter()
+            buildscript {
+                repositories {
+                    jcenter()
+                }
             }
-        }
  
     * Add a dependency to application `build.gradle`:
      
-        compile 'com.rzagorski.retrofitrxerrorhandler:retrofitrxerrorhandler:1.1.0'
+            compile 'com.rzagorski.retrofitrxerrorhandler:retrofitrxerrorhandler:1.1.0'
  
 2. Build the strategy:
 
