@@ -24,6 +24,8 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 
 /**
+ * A helper class to detect events done on {@link rx.Observable}
+ * <br></br>
  * Created by Robert Zagórski on 2016-10-18.
  */
 

@@ -21,6 +21,18 @@ task copyTestResources(type: Copy) {
 }
 processTestResources.dependsOn copyTestResources
 
+jar {
+    into('lib') {
+        from 'libs'
+    }
+}
+
+task fatJar(type: Jar) {
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 test {
     testLogging {
         events "passed", "skipped", "failed", "standardOut", "standardError"
