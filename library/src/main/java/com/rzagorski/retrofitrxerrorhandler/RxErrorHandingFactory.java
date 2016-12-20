@@ -53,9 +53,9 @@ public class RxErrorHandingFactory extends BaseRxCallAdapterFactory {
         return new Observable.Transformer<T, T>() {
             @Override
             public Observable<T> call(Observable<T> observable) {
-                return observable.retryWhen(new Func1<Observable<? extends Throwable>, Observable<T>>() {
+                return observable.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
                     @Override
-                    public Observable<T> call(final Observable<? extends Throwable> error) {
+                    public Observable<?> call(final Observable<? extends Throwable> error) {
                         return error
                                 .flatMap(new IsRepeatableError(info.getBackoffStrategies()))
                                 .compose(new PassErrorToBackoffStrategies<T>(info.getBackoffStrategies()));
