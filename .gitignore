@@ -9,5 +9,4 @@
 /captures
 local.properties
 gradle.properties
-bintray.data.gradle
 .externalNativeBuild

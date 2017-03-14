@@ -1,6 +1,7 @@
 ext {
 
     rxJavaVersion = '1.2.1'
+    rxJava2Version = '2.0.7'
     retrofitVersion = '2.1.0'
     okHttpLoggingVersion = '3.0.1'
     junitVersion = '4.12'
@@ -9,6 +10,7 @@ ext {
     retrofit = "com.squareup.retrofit2:retrofit:${retrofitVersion}"
     retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     rxJava = "io.reactivex:rxjava:${rxJavaVersion}"
+    rxJava2 = "io.reactivex.rxjava2:rxjava:${rxJava2Version}"
     retrofitRxJavaAdapter = "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}"
     okHttpLogging = "com.squareup.okhttp3:logging-interceptor:${okHttpLoggingVersion}"
 

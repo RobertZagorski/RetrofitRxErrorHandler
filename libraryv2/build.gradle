@@ -40,6 +40,7 @@ test {
 }
 
 dependencies {
+    compile rxJava2
     compile rxJava
     compile retrofitRxJavaAdapter
     testCompile mockito

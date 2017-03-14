@@ -1,2 +1,4 @@
 include ':library'
 project(":library").name = "retrofitrxerrorhandler"
+include ':libraryv2'
+project(":libraryv2").name = "retrofitrx2errorhandler"

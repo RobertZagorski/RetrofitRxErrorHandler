@@ -1,5 +1,5 @@
 apply plugin: 'com.github.dcendents.android-maven'
-apply from: '../bintray.data.gradle'
+apply from: 'bintray.data.gradle'
 
 group = publishedGroupId
 
