@@ -17,7 +17,7 @@ package com.rzagorski.retrofitrx2errorhandler.backoff.retryBehavior;
 
 import java.util.List;
 
-import retrofit2.adapter.rxjava.HttpException;
+import retrofit2.HttpException;
 
 public class ExclusiveRetryIfBehaviour extends BaseRetryIfBehavior {
 

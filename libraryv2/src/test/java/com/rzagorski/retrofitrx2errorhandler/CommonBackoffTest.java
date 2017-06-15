@@ -29,14 +29,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.net.SocketTimeoutException;
 
+import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.mockwebserver.SocketPolicy;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import retrofit2.HttpException;
 
 import static com.rzagorski.retrofitrx2errorhandler.utils.MockWebServerUtils.createRetrofitInstance;
 import static org.junit.Assert.assertTrue;
@@ -63,7 +63,7 @@ public class CommonBackoffTest {
 
     /**
      * This test show how to create CallAdapter.Factory without adding a reaction for errors.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -81,19 +81,18 @@ public class CommonBackoffTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertComplete();
     }
 
 
     /**
      * Test shows, that when the server responds with different error
-     * {@link retrofit2.adapter.rxjava.HttpException} than
+     * {@link retrofit2.HttpException} than
      * {@link com.rzagorski.retrofitrx2errorhandler.backoff.BackoffStrategy backoff strategies} react to
      * ({@link java.net.SocketTimeoutException}) the execution ends immediately.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -128,9 +127,8 @@ public class CommonBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         //four SocketTimeoutExceptions and 3 exponential backoff's
@@ -141,13 +139,13 @@ public class CommonBackoffTest {
      * Test shows the usage of two
      * {@link com.rzagorski.retrofitrx2errorhandler.backoff.BackoffStrategy backoff strategies}.
      * Shows that the delay is greater than 3 exponential backoff strategy invocation, that reacts
-     * to {@link retrofit2.adapter.rxjava.HttpException} and 3 simple strategies, that reacts to {@link java.net.SocketTimeoutException}
-     * <br></br>
+     * to {@link retrofit2.HttpException} and 3 simple strategies, that reacts to {@link java.net.SocketTimeoutException}
+     * <br>
      * Shows that every backoff strategy is invoked as many times as in
      * {@link com.rzagorski.retrofitrx2errorhandler.backoff.strategies.Exponential.Builder#setMaxRetries(int)}
      * or in {@link com.rzagorski.retrofitrx2errorhandler.backoff.strategies.Simple.Builder#setMaxRetries(int)}
      * independently.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -177,9 +175,8 @@ public class CommonBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         //four SocketTimeoutExceptions and 3 exponential backoff's
@@ -191,12 +188,12 @@ public class CommonBackoffTest {
      * {@link com.rzagorski.retrofitrx2errorhandler.backoff.BackoffStrategy backoff strategies}.
      * Shows that the delay is greater than 3 exponential backoff strategy invocation, that reacts
      * to 500 server error and 3 simple strategies, that reacts to {@link java.net.SocketTimeoutException}
-     * <br></br>
+     * <br>
      * Shows that every backoff strategy is invoked as many times as in
      * {@link com.rzagorski.retrofitrx2errorhandler.backoff.strategies.Exponential.Builder#setMaxRetries(int)}
      * or in {@link com.rzagorski.retrofitrx2errorhandler.backoff.strategies.Simple.Builder#setMaxRetries(int)}
      * independently.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -225,9 +222,8 @@ public class CommonBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         //four SocketTimeoutExceptions and 3 exponential backoff's
@@ -239,7 +235,7 @@ public class CommonBackoffTest {
      * {@link com.rzagorski.retrofitrx2errorhandler.backoff.BackoffStrategy backoff strategy}.
      * Shows that there is minimal delay, if the response from server is different than strategy
      * reacts to.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -262,9 +258,8 @@ public class CommonBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         assertTrue((endTime - startTime) <= 1 * 1000L);
@@ -275,7 +270,7 @@ public class CommonBackoffTest {
      * {@link com.rzagorski.retrofitrx2errorhandler.backoff.BackoffStrategy backoff strategies}.
      * Shows that there is minimal delay, if the response from server is different than strategies
      * react to.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -301,9 +296,8 @@ public class CommonBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         assertTrue((endTime - startTime) <= MockWebServerUtils.ONE_SEC);
@@ -312,7 +306,7 @@ public class CommonBackoffTest {
     /**
      * Test shows the usage of backup `Observable`. Checks if successful response is passed to
      * `Subscriber` even if backup `Observable` is invoked.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -343,15 +337,14 @@ public class CommonBackoffTest {
         GitHub github = createRetrofitInstance(mockWebServer.url("/").toString(),
                 new RxErrorHandingFactory(rxCallAdapter));
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertComplete();
     }
 
     /**
      * Test shows the usage of backup `Observable`. Checks if it is invoked at least one time.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -384,16 +377,16 @@ public class CommonBackoffTest {
         GitHub github = createRetrofitInstance(mockWebServer.url("/").toString(),
                 new RxErrorHandingFactory(rxCallAdapter));
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        testObserver.awaitTerminalEvent();
         testBackupObservable.assertStarted();
     }
 
     /**
      * Test shows the usage of backup `Observable`. Checks if is in invoked the same amount of times as
      * the error response comes from server
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -427,15 +420,14 @@ public class CommonBackoffTest {
         GitHub github = createRetrofitInstance(mockWebServer.url("/").toString(),
                 new RxErrorHandingFactory(rxCallAdapter));
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         assert testBackupObservable.getOnNextEvents().size() == REQUEST_COUNT;
     }
 
     /**
      * Test shows the usage of backup `Observable`. Checks if it completes at least one time.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -469,16 +461,15 @@ public class CommonBackoffTest {
         GitHub github = createRetrofitInstance(mockWebServer.url("/").toString(),
                 new RxErrorHandingFactory(rxCallAdapter));
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         testBackupObservable.assertCompleted();
     }
 
     /**
      * Test shows the usage of backup `Observable`. Checks if successful response is passed to
      * `Subscriber` even if backup `Observable` is invoked and it does not emits any elements.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -509,9 +500,8 @@ public class CommonBackoffTest {
         GitHub github = createRetrofitInstance(mockWebServer.url("/").toString(),
                 new RxErrorHandingFactory(rxCallAdapter));
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertComplete();
     }
 }

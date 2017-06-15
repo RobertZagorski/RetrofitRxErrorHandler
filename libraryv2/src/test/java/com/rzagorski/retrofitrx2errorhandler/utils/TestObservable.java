@@ -18,14 +18,16 @@ package com.rzagorski.retrofitrx2errorhandler.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import io.reactivex.Observable;
+import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 /**
- * A helper class to detect events done on {@link rx.Observable}
- * <br></br>
+ * A helper class to detect events done on {@link io.reactivex.Observable}
+ * <br>
  * Created by Robert Zagórski on 2016-10-18.
  */
 
@@ -73,34 +75,34 @@ public class TestObservable<T> {
             throw new NullPointerException();
         }
         return observable
-                .doOnSubscribe(new Action0() {
+                .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void call() {
+                    public void accept(@NonNull Disposable disposable) throws Exception {
                         subsciptionTime = System.currentTimeMillis();
                     }
                 })
-                .doOnNext(new Action1<T>() {
+                .doOnNext(new Consumer<T>() {
                     @Override
-                    public void call(T t) {
+                    public void accept(T t) {
                         onNextEvents.add(t);
                     }
                 })
-                .doOnError(new Action1<Throwable>() {
+                .doOnError(new Consumer<Throwable>() {
                     @Override
-                    public void call(Throwable throwable) {
+                    public void accept(Throwable throwable) {
                         onErrorEvents.add(throwable);
                     }
                 })
-                .doOnCompleted(new Action0() {
+                .doOnComplete(new Action() {
                     @Override
-                    public void call() {
+                    public void run() throws Exception {
                         completions++;
                         completionTime = System.currentTimeMillis();
                     }
                 })
-                .map(new Func1<T, T>() {
+                .map(new Function<T, T>() {
                     @Override
-                    public T call(T t) {
+                    public T apply(T t) {
                         executionThread = Thread.currentThread();
                         return t;
                     }

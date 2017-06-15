@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * A builder for <a href="https://github.com/square/retrofit/blob/master/retrofit/src/main/java/retrofit2/CallAdapter.java#L62">CallAdapter.Factory</a>
  * Allows for adding {@link BackoffStrategy backoffStrategies} and logging feature.
- * <br></br>
+ * <br>
  * Created by Robert Zagórski on 2016-09-28.
  */
 public class RxCallAdapter {

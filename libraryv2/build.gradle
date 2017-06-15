@@ -1,15 +1,6 @@
-apply plugin: 'java'
-apply from: 'install.gradle'
-apply from: 'bintray.gradle'
-
-sourceCompatibility = 1.7
-targetCompatibility = 1.7
-
-sourceSets {
-    test {
+sourceSets.test {
         output.resourcesDir = output.classesDir
     }
-}
 
 sourceSets.test {
     resources.srcDirs = ["src/test/resources"]
@@ -41,10 +32,12 @@ test {
 
 dependencies {
     compile rxJava2
-    compile rxJava
-    compile retrofitRxJavaAdapter
+    compile retrofit2
+    compile retrofitRxJava2Adapter
     testCompile mockito
     testCompile junit
     testCompile mockwebserver
     testCompile retrofitGsonConverter
 }
+apply from: 'install.gradle'
+apply from: 'bintray.gradle'

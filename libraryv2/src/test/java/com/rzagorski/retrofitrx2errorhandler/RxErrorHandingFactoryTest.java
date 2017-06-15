@@ -28,12 +28,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
 import okhttp3.mockwebserver.MockWebServer;
-import rx.Observable;
-import rx.observers.TestSubscriber;
 
 import static com.rzagorski.retrofitrx2errorhandler.utils.MockWebServerUtils.createRetrofitInstance;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by Robert Zagórski on 2016-09-29.
@@ -68,9 +68,8 @@ public class RxErrorHandingFactoryTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.assertNoErrors();
+        TestObserver testObserver = observable.test();
+        testObserver.assertNoErrors();
     }
 
     @Test
@@ -85,9 +84,8 @@ public class RxErrorHandingFactoryTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        assertTrue(testSubscriber.getOnNextEvents().size() == 1);
+        TestObserver testSubscriber = observable.test();
+        assertEquals(1, testSubscriber.valueCount());
     }
 
     @Test
@@ -103,8 +101,7 @@ public class RxErrorHandingFactoryTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.assertCompleted();
+        TestObserver testSubscriber = observable.test();
+        testSubscriber.assertComplete();
     }
 }

@@ -29,7 +29,7 @@ import io.reactivex.functions.Function;
  * {@link com.rzagorski.retrofitrx2errorhandler.backoff.strategies.Exponential.Optional#setBase(int) base}
  * and {@link com.rzagorski.retrofitrx2errorhandler.backoff.strategies.Exponential.AddDelay#setMaxRetries(int) maximum number of retries}
  * composed in <a href="http://chubbyrevision-a2level.weebly.com/uploads/1/0/5/8/10584247/267599271_orig.gif?236">exponential function</a>.
- * <br></br>
+ * <br>
  * Enables setting of {@code Throwables}, http codes checked, when retry is needed,
  * maximum number of retries.
  * <p></p>

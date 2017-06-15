@@ -27,17 +27,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.net.SocketTimeoutException;
 
+import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.mockwebserver.SocketPolicy;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import retrofit2.HttpException;
 
 import static com.rzagorski.retrofitrx2errorhandler.utils.MockWebServerUtils.createRetrofitInstance;
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -57,7 +57,7 @@ public class SimpleBackoffTest {
 
     @After
     public void tearDown() throws Exception {
-        mockWebServer = null;
+        //mockWebServer.shutdown();
     }
 
     /**
@@ -65,7 +65,7 @@ public class SimpleBackoffTest {
      * backoff strategy. The server does not responds (every time {@link java.net.SocketTimeoutException}
      * occurrs). The backoff strategy is executed immediately after each error, so there should be
      * 4 times 10 second timeout.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -86,9 +86,8 @@ public class SimpleBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         //four SocketTimeoutExceptions
@@ -101,7 +100,7 @@ public class SimpleBackoffTest {
      * is executed and after {@link com.rzagorski.retrofitrx2errorhandler.backoff.strategies.Simple.Builder#setMaxRetries(int)}
      * is run out, the appropriate error is passed to client.
      * 4 times 10 second timeout.
-     * <br></br>
+     * <br>
      * Test created by Robert Zagorski on 19.10.2016
      */
     @Test
@@ -121,10 +120,9 @@ public class SimpleBackoffTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertError(HttpException.class);
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        testObserver.assertError(HttpException.class);
     }
 
 
@@ -149,9 +147,8 @@ public class SimpleBackoffTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        assertEquals(testSubscriber.getOnErrorEvents().size(), 1);
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        assertEquals(1, testObserver.errorCount());
     }
 }

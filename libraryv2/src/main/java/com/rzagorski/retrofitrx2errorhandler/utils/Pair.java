@@ -18,9 +18,9 @@ package com.rzagorski.retrofitrx2errorhandler.utils;
 
 /**
  * Simple implementation of Pair of objects.
- * <br></br>
+ * <br>
  * Initialised by {@link Pair#of(Object, Object) Pair.of()} function.
- * <br></br>
+ * <br>
  *
  * @param <FIRST>
  * @param <SECOND>

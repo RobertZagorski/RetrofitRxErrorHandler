@@ -30,10 +30,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import io.reactivex.Observer;
+import io.reactivex.observers.DefaultObserver;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import rx.Observable;
-import rx.Subscriber;
+import io.reactivex.Observable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RealExampleTest {
@@ -67,9 +68,9 @@ public class RealExampleTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         // Fetch and print a list of the contributors to the retrofiterrorhandler.
-        call.subscribe(new Subscriber<List<Repository>>() {
+        call.subscribe(new DefaultObserver<List<Repository>>() {
             @Override
-            public void onCompleted() {
+            public void onComplete() {
                 System.out.println(new GregorianCalendar().toInstant().toString() + " Finished");
                 latch.countDown();
             }
@@ -77,7 +78,7 @@ public class RealExampleTest {
             @Override
             public void onError(Throwable e) {
                 System.out.println(new GregorianCalendar().toInstant().toString() + " Finished with error: " + e);
-                onCompleted();
+                onComplete();
             }
 
             @Override

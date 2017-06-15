@@ -27,16 +27,17 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.net.SocketTimeoutException;
 
+import io.reactivex.Observable;
+import io.reactivex.observers.TestObserver;
 import okhttp3.mockwebserver.Dispatcher;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 import okhttp3.mockwebserver.SocketPolicy;
-import retrofit2.adapter.rxjava.HttpException;
-import rx.Observable;
-import rx.observers.TestSubscriber;
+import retrofit2.HttpException;
 
 import static com.rzagorski.retrofitrx2errorhandler.utils.MockWebServerUtils.createRetrofitInstance;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -81,10 +82,9 @@ public class ExponentialBackoffTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        assertTrue(testSubscriber.getOnNextEvents().size() == 1);
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        assertEquals(1, testObserver.valueCount());
     }
 
     @Test
@@ -111,9 +111,8 @@ public class ExponentialBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println(endTime - startTime);
         assertTrue((endTime - startTime) >= MockWebServerUtils.ONE_SEC && (endTime - startTime) <= MockWebServerUtils.ONE_SEC * 2);
@@ -141,10 +140,9 @@ public class ExponentialBackoffTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        assertTrue(testSubscriber.getOnNextEvents().size() == 1);
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        assertEquals(1, testObserver.valueCount());
     }
 
     @Test
@@ -164,10 +162,9 @@ public class ExponentialBackoffTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
+        TestObserver testSubscriber = observable.test();
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertCompleted();
+        testSubscriber.assertComplete();
     }
 
     @Test
@@ -188,10 +185,9 @@ public class ExponentialBackoffTest {
                 new RxErrorHandingFactory(rxCallAdapter));
 
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
-        assertTrue(testSubscriber.getOnErrorEvents().size() == 1);
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
+        assertEquals(1, testObserver.errorCount());
     }
 
     @Test
@@ -213,9 +209,8 @@ public class ExponentialBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         assertTrue((endTime - startTime) >= 13 * MockWebServerUtils.ONE_SEC);
@@ -241,9 +236,8 @@ public class ExponentialBackoffTest {
 
         long startTime = System.currentTimeMillis();
         Observable observable = github.repos("square");
-        TestSubscriber testSubscriber = new TestSubscriber();
-        observable.subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        TestObserver testObserver = observable.test();
+        testObserver.awaitTerminalEvent();
         long endTime = System.currentTimeMillis();
         System.out.println((endTime - startTime));
         //one SocketTimeoutException

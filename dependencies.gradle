@@ -1,20 +1,21 @@
 ext {
-
     rxJavaVersion = '1.2.1'
-    rxJava2Version = '2.0.7'
-    retrofitVersion = '2.1.0'
+    rxJava2Version = '2.1.0'
+    retrofitVersion = '2.3.0'
     okHttpLoggingVersion = '3.0.1'
     junitVersion = '4.12'
     mockitoVersion = '2.0.54-beta'
 
     retrofit = "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    retrofit2 = "com.squareup.retrofit2:retrofit:${retrofitVersion}"
     retrofitGsonConverter = "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
     rxJava = "io.reactivex:rxjava:${rxJavaVersion}"
     rxJava2 = "io.reactivex.rxjava2:rxjava:${rxJava2Version}"
     retrofitRxJavaAdapter = "com.squareup.retrofit2:adapter-rxjava:${retrofitVersion}"
+    retrofitRxJava2Adapter = "com.squareup.retrofit2:adapter-rxjava2:${retrofitVersion}"
     okHttpLogging = "com.squareup.okhttp3:logging-interceptor:${okHttpLoggingVersion}"
 
-    mockwebserver = "com.squareup.okhttp3:mockwebserver:3.4.1"
+    mockwebserver = "com.squareup.okhttp3:mockwebserver:3.8.0"
     junit = "junit:junit:${junitVersion}"
     mockito = "org.mockito:mockito-core:${mockitoVersion}"
 }
