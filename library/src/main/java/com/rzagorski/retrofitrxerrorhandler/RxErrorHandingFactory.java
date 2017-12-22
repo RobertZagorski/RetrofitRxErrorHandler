@@ -25,7 +25,7 @@ import rx.functions.Func1;
 /**
  * Main class for reacting to errors that were thrown during making a
  * <a href="https://github.com/square/retrofit/blob/master/retrofit/src/main/java/retrofit2/Call.java">Call</a>.
- * <br></br>
+ * <br>
  * Created by Robert Zagórski on 2016-09-28.
  */
 public class RxErrorHandingFactory extends BaseRxCallAdapterFactory {

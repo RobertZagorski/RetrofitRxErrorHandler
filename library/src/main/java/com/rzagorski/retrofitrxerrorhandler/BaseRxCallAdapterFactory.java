@@ -30,7 +30,7 @@ import rx.Observable;
  * <a href="https://github.com/square/retrofit/blob/master/retrofit-adapters/rxjava/src/main/java/retrofit2/adapter/rxjava/RxJavaCallAdapterFactory.java">RxJavaCallAdapterFactory</a>
  * and uses <a href="https://github.com/ReactiveX/RxJava/blob/1.x/src/main/java/rx/Observable.java#L277">Observable#compose(Observable.Transformer)</a>
  * to pass handling of events made with call to it's inheritors.
- * <br></br>
+ * <br>
  * Created by Robert Zagórski on 2016-09-28.
  */
 
@@ -43,15 +43,15 @@ abstract class BaseRxCallAdapterFactory extends CallAdapter.Factory {
     }
 
     @Override
-    public CallAdapter<?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
+    public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations, Retrofit retrofit) {
         return new RxCallAdapterWrapper(retrofit, original.get(returnType, annotations, retrofit));
     }
 
-    private class RxCallAdapterWrapper implements CallAdapter<Observable<?>> {
+    private class RxCallAdapterWrapper<R> implements CallAdapter<R, Object> {
         private final Retrofit retrofit;
-        private final CallAdapter<?> wrapped;
+        private final CallAdapter<R,R> wrapped;
 
-        RxCallAdapterWrapper(Retrofit retrofit, CallAdapter<?> wrapped) {
+        RxCallAdapterWrapper(Retrofit retrofit, CallAdapter<R,R> wrapped) {
             this.retrofit = retrofit;
             this.wrapped = wrapped;
         }
@@ -63,7 +63,7 @@ abstract class BaseRxCallAdapterFactory extends CallAdapter.Factory {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <R> Observable adapt(final Call<R> call) {
+        public Observable adapt(final Call<R> call) {
             return ((Observable<R>) wrapped.adapt(call))
                     .compose(transformRequest());
         }

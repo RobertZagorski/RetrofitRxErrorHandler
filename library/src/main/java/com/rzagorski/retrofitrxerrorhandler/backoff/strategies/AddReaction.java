@@ -70,7 +70,8 @@ public interface AddReaction<T> {
      * After successful execution of this observable, the reactive sequence will be repeated.
      * Executes immediately after error occurred and after every occurence.
      *
-     * @param observable
+     * @param observable backup Observable
+     * @return strategy
      */
     public T addObservable(Observable<?> observable);
 }

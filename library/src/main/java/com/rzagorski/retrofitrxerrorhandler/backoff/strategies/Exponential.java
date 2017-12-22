@@ -29,10 +29,10 @@ import rx.functions.Func1;
  * {@link com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Exponential.Optional#setBase(int) base}
  * and {@link com.rzagorski.retrofitrxerrorhandler.backoff.strategies.Exponential.AddDelay#setMaxRetries(int) maximum number of retries}
  * composed in <a href="http://chubbyrevision-a2level.weebly.com/uploads/1/0/5/8/10584247/267599271_orig.gif?236">exponential function</a>.
- * <br></br>
+ * <br>
  * Enables setting of {@code Throwables}, http codes checked, when retry is needed,
  * maximum number of retries.
- * <p></p>
+ * <p>
  * Created by Robert Zagórski on 2016-09-28.
  */
 public class Exponential extends BaseBackoffStrategy {

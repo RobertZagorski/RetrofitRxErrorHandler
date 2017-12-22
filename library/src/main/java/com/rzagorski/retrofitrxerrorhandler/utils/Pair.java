@@ -18,12 +18,12 @@ package com.rzagorski.retrofitrxerrorhandler.utils;
 
 /**
  * Simple implementation of Pair of objects.
- * <br></br>
+ * <br>
  * Initialised by {@link Pair#of(Object, Object) Pair.of()} function.
- * <br></br>
+ * <br>
  *
- * @param <FIRST>
- * @param <SECOND>
+ * @param <FIRST> first element
+ * @param <SECOND> second element
  * @author Peter Lawrey
  */
 public class Pair<FIRST, SECOND> implements Comparable<Pair<FIRST, SECOND>> {

@@ -21,7 +21,6 @@ import rx.functions.Func1;
 /**
  * The base interface for all backoff strategies.
  * <p>
- * <br>
  * Created by Robert Zagórski on 2016-09-28.
  */
 public interface BackoffStrategy extends Func1<Observable<? extends Throwable>, Observable<?>> {
@@ -29,15 +28,15 @@ public interface BackoffStrategy extends Func1<Observable<? extends Throwable>, 
     /**
      * Defines, whether the specifies throwable should be handled by this {@link BackoffStrategy}
      *
-     * @param throwable
-     * @return
+     * @param throwable error to be considered
+     * @return whether error is met
      */
     boolean isApplicable(Throwable throwable);
 
     /**
      * Enabling logging feature for this {@link BackoffStrategy}
      *
-     * @param logging
+     * @param logging whether logging should be enabled
      */
     void setLoggingEnabled(boolean logging);
 
